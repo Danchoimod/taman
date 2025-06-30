@@ -5,6 +5,8 @@ import './App.css'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import ZaloFloat from './components/Zalo'
+import skyBg from './assets/img/skybackground.jpg'
+import room from './assets/img/anh1.jpg'
 function App() {
   const [count, setCount] = useState(0)
 
@@ -16,7 +18,7 @@ function App() {
         {/* đây là content  */}
         <div className="relative w-full h-64 overflow-hidden">
           {/* ảnh nền */}
-          <img src="\img\skybackground.jpg" alt="Bầu trời" className="w-full h-full object-cover scale-y-[-1]" />
+          <img src={skyBg} alt="Bầu trời" className="w-full h-full object-cover scale-y-[-1]" />
 
           <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
             <h2 className="text-2xl font-bold text-center">Chào mừng đến Tâm An <br /> Nơi an cư, vững bước tương lai.</h2>
@@ -46,10 +48,6 @@ function App() {
             message="Tiết kiệm thời gian, thuận tiện cho sinh hoạt hàng ngày."
           />
           <Amenities
-            title="Chỗ để xe an toàn"
-            message="Tự do ra vào, phù hợp với lịch sinh hoạt linh hoạt."
-          />
-          <Amenities
             title="Cho phép nuôi thú cưng"
             message="Thoải mái sống cùng thú cưng mà không bị ràng buộc."
           />
@@ -69,10 +67,10 @@ function App() {
         <div className="text-darkblue text-center mt-10 text-xl font-bold">
           Hình ảnh về nhà trọ
         </div>
-        <HouseImage imgUrl="img/anh1.jpg" />
+          <HouseImage imgUrl={room} />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <HouseImage imgUrl="img/anh1.jpg" />
-          <HouseImage imgUrl="img/anh1.jpg" />
+          <HouseImage imgUrl={room} />
+          <HouseImage imgUrl={room} />
 
         </div>
         {/* đây là content  */}
