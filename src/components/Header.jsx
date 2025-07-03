@@ -33,7 +33,7 @@ export default function Header() {
 
                 <nav className="hidden md:flex space-x-6">
                     <a href="/" className="text-gray-700 hover:text-green-600 font-medium">Trang chủ</a>
-                    <a href="/phong" className="text-gray-700 hover:text-green-600 font-medium">Phòng</a>
+                    <a href="/Branch" className="text-gray-700 hover:text-green-600 font-medium">Phòng</a>
                     <a href="/lien-he" className="text-gray-700 hover:text-green-600 font-medium">Liên hệ</a>
                 </nav>
             </div>

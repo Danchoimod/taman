@@ -3,6 +3,6 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/', // 👈 thêm dòng này/taman/
+  base: '/taman/', // 👈 thêm dòng này/taman/ nếu dùng github
   plugins: [react()],
 })
