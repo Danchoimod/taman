@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import Branch from './pages/BranchSelector'
 import RoomBooking from './pages/RoomBooking'
-import Home from './pages/home';
+import Home from './pages/home'
 
 
 
