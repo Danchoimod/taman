@@ -7,7 +7,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
           <div>
             <h3 className="font-bold text-lg mb-2">Liên hệ</h3>
-            <p className="text-gray-300">📞 0913778270</p>
+            <p className="text-gray-300">SDT: 0913778270</p>
             <p className="text-gray-300">Zalo: Nhà trọ Tâm An</p>
 
           </div>

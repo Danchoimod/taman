@@ -6,6 +6,7 @@ import Footer from '../components/Footer'
 import skyBg from '../assets/img/skybackground.jpg'
 import room from '../assets/img/anh1.jpg'
 import Notfication from '../components/Notification'
+import ZaloChat from '../components/ZaloChat';
 
 function Home() {
   const [count, setCount] = useState(0)
@@ -32,32 +33,32 @@ function Home() {
         </div>
         <Notfication notfi="Giới thiệu"></Notfication>
 
-          <section className="text-center">
+        <section className="text-center">
 
-            <div className="mt-8 bg-white rounded-2xl shadow-xl p-8 md:p-12">
-              <div className="max-w-4xl mx-auto">
-                <p className="text-gray-700 text-lg md:text-xl leading-relaxed font-medium">
-                  Nhà trọ <span className="text-blue-600 font-bold">Tâm An</span> tự hào mang đến một không gian sống hiện đại, 
-                  an toàn, tiện nghi và đặc biệt là sự tự do tối đa. Chúng tôi hiểu rằng, một môi trường sống tốt không chỉ là 
-                  nơi để ngả lưng mà còn là bệ phóng cho học tập và sự nghiệp của bạn.
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-                  <div className="text-center p-4">
-                    <div className="text-3xl font-bold text-blue-600">100+</div>
-                    <div className="text-gray-600">Sinh viên tin tưởng</div>
-                  </div>
-                  <div className="text-center p-4">
-                    <div className="text-3xl font-bold text-green-600">24/7</div>
-                    <div className="text-gray-600">Hỗ trợ an ninh</div>
-                  </div>
-                  <div className="text-center p-4">
-                    <div className="text-3xl font-bold text-purple-600">5★</div>
-                    <div className="text-gray-600">Đánh giá trung bình</div>
-                  </div>
+          <div className="mt-8 bg-white rounded-2xl shadow-xl p-8 md:p-12">
+            <div className="max-w-4xl mx-auto">
+              <p className="text-gray-700 text-lg md:text-xl leading-relaxed font-medium">
+                Nhà trọ <span className="text-blue-600 font-bold">Tâm An</span> tự hào mang đến một không gian sống hiện đại,
+                an toàn, tiện nghi và đặc biệt là sự tự do tối đa. Chúng tôi hiểu rằng, một môi trường sống tốt không chỉ là
+                nơi để ngả lưng mà còn là bệ phóng cho học tập và sự nghiệp của bạn.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                <div className="text-center p-4">
+                  <div className="text-3xl font-bold text-blue-600">100+</div>
+                  <div className="text-gray-600">Sinh viên tin tưởng</div>
+                </div>
+                <div className="text-center p-4">
+                  <div className="text-3xl font-bold text-green-600">24/7</div>
+                  <div className="text-gray-600">Hỗ trợ an ninh</div>
+                </div>
+                <div className="text-center p-4">
+                  <div className="text-3xl font-bold text-purple-600">5★</div>
+                  <div className="text-gray-600">Đánh giá trung bình</div>
                 </div>
               </div>
             </div>
-          </section>
+          </div>
+        </section>
         <Notfication notfi="Tiện nghi"></Notfication>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Amenities
@@ -101,8 +102,16 @@ function Home() {
         {/* đây là content  */}
 
         <Footer></Footer>
-    
+        <ZaloChat
+          oaid="1187923599968080778" // Thay thế bằng OA ID của bạn
+          welcomeMessage="Rất vui khi được hỗ trợ bạn!"
+          autopopup="0"
+          width="350"
+          height="420"
+        />
       </div>
+
+
     </>
   )
 }
