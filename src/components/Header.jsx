@@ -43,6 +43,7 @@ export default function Header() {
                     <button onClick={() => trans('')} className="text-gray-700 hover:text-green-600 font-medium">Trang chủ</button>
                     <button onClick={() => trans('Branch')} className="text-gray-700 hover:text-green-600 font-medium">Phòng</button>
                     <button onClick={() => trans('lien-he')} className="text-gray-700 hover:text-green-600 font-medium">Liên hệ</button>
+                    <button onClick={() => trans('Admin')} className="text-gray-700 hover:text-green-600 font-medium">Đăng nhập</button>
                 </nav>
             </div>
 
@@ -52,6 +53,8 @@ export default function Header() {
                     <button onClick={() => trans('')} className="block text-gray-700 hover:text-green-600">Trang chủ</button>
                     <button onClick={() => trans('Branch')} className="block text-gray-700 hover:text-green-600">Phòng</button>
                     <button onClick={() => trans('lien-he')} className="block text-gray-700 hover:text-green-600 ">Liên hệ</button>
+                    <button onClick={() => trans('admin')} className="block text-gray-700 hover:text-green-600 ">Admin</button>
+                  
                 </nav>
             )}
         </header>

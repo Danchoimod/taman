@@ -19,15 +19,15 @@ function Home() {
     <>
       <div className="bg-mainColor">
         <Header></Header>
-        <br /><br />
+
         {/* đây là content  */}
-        <div className="relative w-full h-64 overflow-hidden">
+        <div className="relative w-full h-64 overflow-hidden mt-10">
           {/* ảnh nền */}
           <img src={skyBg} alt="Bầu trời" className="w-full h-full object-cover scale-y-[-1]" />
 
           <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
             <h2 className="text-2xl font-bold text-center">Chào mừng đến Tâm An <br /> Nơi an cư, vững bước tương lai.</h2>
-            <button onClick={handleClick} className="mt-4 px-4 py-2 bg-btnContact text-black transition-transform duration-300 hover:scale-105">Kham khảo</button>
+            <button onClick={handleClick} className="mt-4 px-4 py-2 bg-btnContact text-black transition-transform duration-300 hover:scale-105 rounded-2xl font-semibold">Kham khảo</button>
           </div>
 
         </div>
