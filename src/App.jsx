@@ -3,7 +3,7 @@ import Branch from './pages/BranchSelector';
 import RoomBooking from './pages/RoomBooking';
 import Home from './pages/home';
 import LienHe from './pages/LienHe';
-import AuthPage from './pages/Admin/auth';
+import AuthPage from './pages/Admin/Auth';
 import Adminbranch from './pages/Admin/branch';
 import HomeAdmin from './pages/Admin/Dashboard';
 import AdminLayout from './layouts/AdminLayout';
