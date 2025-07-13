@@ -4,7 +4,7 @@ import RoomBooking from './pages/RoomBooking';
 import Home from './pages/home';
 import LienHe from './pages/LienHe';
 import AuthPage from './pages/Admin/AuthAdmin';
-import Adminbranch from './pages/Admin/branch';
+import Adminbranch from './pages/Admin/Branch';
 import HomeAdmin from './pages/Admin/Dashboard';
 import AdminLayout from './layouts/AdminLayout';
 import Contract from './pages/Admin/Contract';
