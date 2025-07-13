@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react'
-import Header from '../components/Header'
+import Header from '../../components/Header'
 import { createClient } from '@supabase/supabase-js'
-import AdminPanel from '../components/AdminPanel'
 import { Auth } from '@supabase/auth-ui-react'
 import { ThemeSupa } from '@supabase/auth-ui-shared'
+import { useNavigate } from 'react-router-dom';
 const supabase = createClient('https://xodhvzvlgwrzrdrnbzev.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhvZGh2enZsZ3dyenJkcm5iemV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEzMjkyNTYsImV4cCI6MjA2NjkwNTI1Nn0.zNtwvH1fNH-hc6iCelhdOYgaANpnKaLjYK-OpNG4tqA')
-async function signOut() {
-  const { error } = await supabase.auth.signOut()
-}
 
-export default function App() {
+export default function AuthPage() {
   const [session, setSession] = useState(null)
+  const navigate = useNavigate();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -18,7 +16,6 @@ export default function App() {
     })
 
     const {
-        
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
@@ -27,32 +24,22 @@ export default function App() {
     return () => subscription.unsubscribe()
   }, [])
 
+  useEffect(() => {
+    if (session) {
+      navigate('/Admin'); // chuyển về route đúng đã khai báo
+    }
+  }, [session, navigate]);
+
   if (!session) {
-    
     return (
-        <div>
-            <Header></Header>
-            <div className='mt-20'>
-                                <Auth supabaseClient={supabase} appearance={{ theme: ThemeSupa }} providers={[]} />
-            </div>
+      <div>
+        <Header></Header>
+        <div className='mt-20'>
+          <Auth supabaseClient={supabase} appearance={{ theme: ThemeSupa }} providers={[]} />
         </div>
-)
-  }
-  else {
-    return (<div>
-
-      <AdminPanel
-        funcList={[
-          "Màn hình chính",
-          "chi nhánh",
-          "Hợp đồng",
-          "Điện nước",
-          "phòng trò",
-          "Thông báo zalo",
-          "Đăng xuất"
-        ]}
-      ></AdminPanel>
-
-    </div>)
+      </div>
+    )
+  } else {
+    return null;
   }
 }

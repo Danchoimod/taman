@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import '../App.css'
 import Header from '../components/Header'
@@ -7,7 +7,11 @@ import skyBg from '../assets/img/skybackground.jpg'
 import room from '../assets/img/anh1.jpg'
 import Notfication from '../components/Notification'
 import ZaloChat from '../components/ZaloChat';
-
+import { createClient } from '@supabase/supabase-js'
+const supabase = createClient(
+  'https://xodhvzvlgwrzrdrnbzev.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhvZGh2enZsZ3dyenJkcm5iemV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEzMjkyNTYsImV4cCI6MjA2NjkwNTI1Nn0.zNtwvH1fNH-hc6iCelhdOYgaANpnKaLjYK-OpNG4tqA'
+)
 function Home() {
   const [count, setCount] = useState(0)
   const navigate = useNavigate(); // ✅ hook dùng để điều hướng
@@ -15,6 +19,26 @@ function Home() {
     navigate('/branch'); // 👉 chuyển đến trang /about
 
   };
+  const [imageUrls, setImageUrls] = useState([])
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      const { data, error } = await supabase.storage.from('image').list('content', { limit: 100 })
+      if (!error && data) {
+        const files = data.filter(f => f.name)
+        const urls = files.map(f => ({
+          name: f.name,
+          url: supabase.storage.from('image').getPublicUrl(`content/${f.name}`).data.publicUrl
+        }))
+        setImageUrls(urls)
+      } else {
+        console.error("Lỗi khi lấy danh sách ảnh:", error)
+      }
+    }
+
+    fetchImages()
+  }, [])
+
   return (
     <>
       <div className="bg-mainColor">
@@ -93,12 +117,12 @@ function Home() {
         <div className="text-darkblue text-center mt-10 text-xl font-bold">
           Hình ảnh về nhà trọ
         </div>
-        <HouseImage imgUrl={room} />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <HouseImage imgUrl={room} />
-          <HouseImage imgUrl={room} />
-
+          {imageUrls.map((img, idx) => (
+            <HouseImage key={idx} imgUrl={img.url} />
+          ))}
         </div>
+
         {/* đây là content  */}
 
         <Footer></Footer>
