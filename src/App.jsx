@@ -27,7 +27,7 @@ function App() {
         <Route path="admin-Contract" element={<Contract />} /> 
         <Route path="admin-Electrical" element={<Electrical />} /> 
         <Route path="admin-Room" element={<Room />} /> 
-        <Route path="admin-ZnsManager" element={<Contract />} /> 
+        <Route path="admin-ZnsManager" element={<ZnsManager />} /> 
       </Route>
     </Routes>
   );
