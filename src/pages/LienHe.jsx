@@ -25,12 +25,12 @@ export default function LienHe() {
             <div className="flex items-center gap-3 text-lg">
               <span className="text-purple-600 text-2xl">📍</span>
               <span className="font-semibold">Địa chỉ:</span>
-              <span>123 Đường Tự Do, Quận Bình Thạnh, TP.HCM</span>
+              <span>Trọ Tâm An 2, KDC Đại Lộc Phát, phường Long Tuyền, Bình Thủy, TP Cần Thơ</span>
             </div>
             <div className="flex items-center gap-3 text-lg">
               <span className="text-blue-400 text-2xl">💬</span>
               <span className="font-semibold">Zalo:</span>
-              <a href="https://zalo.me/0901234567" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline">0901 234 567</a>
+              <a href="https://zalo.me/0395473223" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline">0901 234 567</a>
             </div>
           </div>
           <div className="w-full bg-blue-50 rounded-xl p-4 flex flex-col items-center mb-2">
