@@ -21,8 +21,7 @@ function RoomBooking() {
 
       if (error) console.error('Lỗi lấy chi nhánh:', error)
       else setBranch(data)
-    } // giá trị trong useeffect sẽ thay đổi theo giá trị được thay đổi
-
+    }
     fetchBranch()
   }, [branchId])
 
@@ -37,42 +36,53 @@ function RoomBooking() {
       if (error) console.error('Lỗi lấy phòng:', error)
       else setRooms(data)
     }
-
     fetchRooms()
   }, [branchId])
   const getImageUrl = (filename) => {
+    if (!filename) return '';
+    if (filename.startsWith('http')) return filename;
     return supabase
       .storage
-      .from('lastfom') // ← Tên bucket
-      .getPublicUrl(filename).data.publicUrl
+      .from('image')
+      .getPublicUrl(filename).data.publicUrl;
   }
   if (!branch) return <p>Đang tải chi nhánh...</p>
 
   return (
-    <div>
-      <br />
-      <br />
-      <br />
-      <Header></Header>
-
-      <Title tieude={branch.ten_chi_nhanh}></Title>
-      {rooms.length === 0 ? (
-        <p>Không có phòng nào trong chi nhánh này.</p>
-      ) : (
-        <ul className='grid grid-cols-1 md:grid-cols-3 gap-4'>
-          {rooms.map(room => (
-            <li key={room.ma_phong}>
-              <div className="m-5">
-                <img src={getImageUrl("image3.png")} alt="" />
-                <strong>{room.ten_phong}</strong> – Giá: {room.gia_phong} –{' '}
-                {room.dang_trong ? 'Trống' : 'Đã thuê'}
-                <AppButton text="Thuê"></AppButton>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
-      <Footer></Footer>
+    <div className="min-h-screen bg-mainColor">
+      <Header />
+      <div className="pt-16 pb-4">
+        <Title tieude={branch.ten_chi_nhanh} />
+        {rooms.length === 0 ? (
+          <p className="text-center text-gray-500 mt-8">Không có phòng nào trong chi nhánh này.</p>
+        ) : (
+          <ul className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto mt-8">
+            {rooms.map(room => (
+              <li key={room.ma_phong}>
+                <div className="bg-white rounded-3xl shadow-xl border border-blue-100 hover:shadow-2xl transition p-4 flex flex-col items-center h-full">
+                  <img
+                    src={getImageUrl(room.hinh_anh)}
+                    alt={room.ten_phong}
+                    className="rounded-2xl w-full h-[200px] object-cover mb-4 border border-gray-100 shadow-sm"
+                  />
+                  <div className="w-full text-center mb-3">
+                    <p className="font-bold text-lg mb-1 text-blue-900">{room.ten_phong}</p>
+                    <span className="text-base font-semibold text-blue-600">Giá: {room.gia_phong.toLocaleString()}đ</span>
+                    <span className="block text-sm mt-1 font-medium {room.dang_trong ? 'text-green-600' : 'text-gray-400'}">
+                      {room.dang_trong ? 'Trống' : 'Đã thuê'}
+                    </span>
+                  </div>
+                  <AppButton
+                    text="Thuê"
+                    className="w-full mt-auto px-6 py-2 bg-gradient-to-r from-blue-400 to-blue-600 text-white rounded-full font-semibold shadow hover:from-blue-500 hover:to-blue-700 transition-all duration-300"
+                  />
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+      <Footer />
     </div>
   )
 }

@@ -17,7 +17,6 @@ function Home() {
   const navigate = useNavigate(); // ✅ hook dùng để điều hướng
   const handleClick = () => {
     navigate('/branch'); // 👉 chuyển đến trang /about
-
   };
   const [imageUrls, setImageUrls] = useState([])
 
@@ -35,31 +34,34 @@ function Home() {
         console.error("Lỗi khi lấy danh sách ảnh:", error)
       }
     }
-
     fetchImages()
   }, [])
 
   return (
     <>
-      <div className="bg-mainColor">
+      <div className="bg-mainColor min-h-screen">
         <Header></Header>
-
-        {/* đây là content  */}
-        <div className="relative w-full h-64 overflow-hidden mt-10">
-          {/* ảnh nền */}
+        {/* Hero section */}
+        <div className="relative w-full h-[350px] md:h-[420px] overflow-hidden mt-10 flex items-center justify-center">
           <img src={skyBg} alt="Bầu trời" className="w-full h-full object-cover scale-y-[-1]" />
-
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
-            <h2 className="text-2xl font-bold text-center">Chào mừng đến Tâm An <br /> Nơi an cư, vững bước tương lai.</h2>
-            <button onClick={handleClick} className="mt-4 px-4 py-2 bg-btnContact text-black transition-transform duration-300 hover:scale-105 rounded-2xl font-semibold">Kham khảo</button>
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-black/30 z-10" />
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-white z-20">
+            <h2 className="text-3xl md:text-5xl font-extrabold text-center drop-shadow-lg tracking-wide mb-4">
+              Chào mừng đến <span className="text-blue-400">Tâm An</span> <br />
+              <span className="text-lg md:text-2xl font-semibold">Nơi an cư, vững bước tương lai.</span>
+            </h2>
+            <button
+              onClick={handleClick}
+              className="mt-4 px-8 py-3 bg-gradient-to-r from-blue-400 to-blue-600 text-white shadow-lg rounded-full font-semibold text-lg hover:scale-105 hover:from-blue-500 hover:to-blue-700 transition-all duration-300"
+            >
+              Khám khảo
+            </button>
           </div>
-
         </div>
         <Notfication notfi="Giới thiệu"></Notfication>
-
+        {/* Giới thiệu */}
         <section className="text-center">
-
-          <div className="mt-8 bg-white rounded-2xl shadow-xl p-8 md:p-12">
+          <div className="mt-8 bg-white rounded-3xl shadow-2xl p-8 md:p-12 border border-blue-100">
             <div className="max-w-4xl mx-auto">
               <p className="text-gray-700 text-lg md:text-xl leading-relaxed font-medium">
                 Nhà trọ <span className="text-blue-600 font-bold">Tâm An</span> tự hào mang đến một không gian sống hiện đại,
@@ -67,15 +69,15 @@ function Home() {
                 nơi để ngả lưng mà còn là bệ phóng cho học tập và sự nghiệp của bạn.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-                <div className="text-center p-4">
+                <div className="text-center p-4 rounded-xl bg-blue-50 shadow hover:shadow-lg transition">
                   <div className="text-3xl font-bold text-blue-600">100+</div>
                   <div className="text-gray-600">Sinh viên tin tưởng</div>
                 </div>
-                <div className="text-center p-4">
+                <div className="text-center p-4 rounded-xl bg-green-50 shadow hover:shadow-lg transition">
                   <div className="text-3xl font-bold text-green-600">24/7</div>
                   <div className="text-gray-600">Hỗ trợ an ninh</div>
                 </div>
-                <div className="text-center p-4">
+                <div className="text-center p-4 rounded-xl bg-purple-50 shadow hover:shadow-lg transition">
                   <div className="text-3xl font-bold text-purple-600">5★</div>
                   <div className="text-gray-600">Đánh giá trung bình</div>
                 </div>
@@ -84,47 +86,46 @@ function Home() {
           </div>
         </section>
         <Notfication notfi="Tiện nghi"></Notfication>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto mt-6 mb-10">
           <Amenities
+            icon="📶"
             title="Wifi tốc độ cao"
             message="Kết nối ổn định, hỗ trợ học tập và làm việc online hiệu quả."
           />
           <Amenities
+            icon="🎥"
             title="Camera an ninh"
             message="Hệ thống giám sát 24/7 đảm bảo an toàn tuyệt đối."
           />
           <Amenities
-            title="Tạp hóa và giặc ủi trong trọ"
+            icon="🛒"
+            title="Tạp hóa & giặt ủi"
             message="Tiết kiệm thời gian, thuận tiện cho sinh hoạt hàng ngày."
           />
           <Amenities
-            title="Cho phép nuôi thú cưng"
+            icon="🐶"
+            title="Nuôi thú cưng"
             message="Thoải mái sống cùng thú cưng mà không bị ràng buộc."
           />
-
           <Amenities
+            icon="❄️"
             title="Có điều hòa mát mẻ"
             message="Giữ cho căn phòng luôn dễ chịu, kể cả ngày hè oi bức."
           />
-
           <Amenities
+            icon="⏰"
             title="Tự do giờ giấc"
             message="Không giới hạn giờ giấc ra vào, phù hợp với sinh viên và người đi làm."
           />
-
         </div>
-
-        <div className="text-darkblue text-center mt-10 text-xl font-bold">
+        <div className="text-darkblue text-center mt-10 text-2xl font-bold tracking-wide">
           Hình ảnh về nhà trọ
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto mt-6 mb-16">
           {imageUrls.map((img, idx) => (
             <HouseImage key={idx} imgUrl={img.url} />
           ))}
         </div>
-
-        {/* đây là content  */}
-
         <Footer></Footer>
         <ZaloChat
           oaid="1187923599968080778" // Thay thế bằng OA ID của bạn
@@ -134,27 +135,31 @@ function Home() {
           height="420"
         />
       </div>
-
-
     </>
   )
 }
-function Amenities({ title, message }) {
+
+// Amenities có icon
+function Amenities({ icon, title, message }) {
   return (
-    <div className="bg-white text-black mx-5 mt-5 rounded-xl p-2 transition-transform duration-300 hover:scale-105" >
-      <h1 className='text-xl font-medium'>{title}</h1>
-      <p>{message}</p>
+    <div className="bg-white text-black rounded-2xl p-6 flex flex-col items-center shadow-md hover:shadow-xl transition-transform duration-300 hover:scale-105 border border-gray-100">
+      <div className="text-4xl mb-2">{icon}</div>
+      <h1 className='text-xl font-semibold mb-1'>{title}</h1>
+      <p className="text-gray-600 text-center">{message}</p>
     </div>
   );
 }
+
 function HouseImage({ imgUrl }) {
   return (
-    <div className="w-full h-auto  p-10 justify-center justify-items-center">
-      <img src={imgUrl} alt="Hình nhà trọ" className='rounded-xl Header' />
+    <div className="w-full flex justify-center items-center">
+      <img
+        src={imgUrl}
+        alt="Hình nhà trọ"
+        className="rounded-2xl w-full h-[320px] object-cover shadow-lg border border-gray-100 hover:scale-105 hover:shadow-2xl transition-transform duration-300"
+      />
     </div>
   );
 }
-
-
 
 export default Home

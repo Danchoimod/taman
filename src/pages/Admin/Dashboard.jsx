@@ -11,6 +11,10 @@ const supabase = createClient(
 const Dashboard = () => {
   const [images, setImages] = useState([])
   const [loading, setLoading] = useState(false)
+  const [roomCount, setRoomCount] = useState(0);
+  const [contractCount, setContractCount] = useState(0);
+  const [branchCount, setBranchCount] = useState(0);
+  const [emptyRoomCount, setEmptyRoomCount] = useState(0);
 
   // Hàm tải danh sách ảnh từ bucket 'image' trong folder 'content'
   const fetchImages = async () => {
@@ -29,8 +33,28 @@ const Dashboard = () => {
     setLoading(false)
   }
 
+  // Hàm lấy thống kê số lượng phòng, hợp đồng, chi nhánh
+  const fetchStats = async () => {
+    const [
+      { count: phongCount },
+      { count: hopDongCount },
+      { count: chiNhanhCount },
+      { count: emptyCount }
+    ] = await Promise.all([
+      supabase.from('phong').select('*', { count: 'exact', head: true }),
+      supabase.from('hop_dong').select('*', { count: 'exact', head: true }),
+      supabase.from('chi_nhanh').select('*', { count: 'exact', head: true }),
+      supabase.from('phong').select('*', { count: 'exact', head: true }).eq('dang_trong', true)
+    ]);
+    setRoomCount(phongCount || 0);
+    setContractCount(hopDongCount || 0);
+    setBranchCount(chiNhanhCount || 0);
+    setEmptyRoomCount(emptyCount || 0);
+  };
+
   useEffect(() => {
     fetchImages()
+    fetchStats()
   }, [])
 
   // Upload ảnh vào image/content/
@@ -80,6 +104,29 @@ const Dashboard = () => {
 
   return (
     <div className="p-4">
+      <div className="mb-4">
+        <a href="/" className="inline-block bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded transition-colors duration-150">
+          Về màn hình chính
+        </a>
+      </div>
+      <div className="flex flex-wrap gap-4 mb-6">
+        <div className="bg-white rounded shadow p-4 min-w-[160px] text-center">
+          <div className="text-2xl font-bold text-blue-600">{roomCount}</div>
+          <div className="text-gray-600">Phòng</div>
+        </div>
+        <div className="bg-white rounded shadow p-4 min-w-[160px] text-center">
+          <div className="text-2xl font-bold text-green-600">{contractCount}</div>
+          <div className="text-gray-600">Hợp đồng</div>
+        </div>
+        <div className="bg-white rounded shadow p-4 min-w-[160px] text-center">
+          <div className="text-2xl font-bold text-purple-600">{branchCount}</div>
+          <div className="text-gray-600">Chi nhánh</div>
+        </div>
+        <div className="bg-white rounded shadow p-4 min-w-[160px] text-center">
+          <div className="text-2xl font-bold text-orange-600">{emptyRoomCount}</div>
+          <div className="text-gray-600">Phòng trống</div>
+        </div>
+      </div>
       <p className="font-bold text-lg mb-4">📷 Quản lý hình ảnh (bucket: image / content)</p>
 
       <form onSubmit={e => e.preventDefault()} className="flex items-center gap-2 mb-4">
@@ -106,7 +153,7 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {images.map((img, idx) => (
           <div key={img.name} className="relative border rounded-lg shadow">
-            <img src={img.url} alt={img.name} className="rounded-xl w-full" />
+            <img src={img.url} alt={img.name} className="rounded-xl w-full h-[400px] object-cover " />
             <button
               onClick={() => handleDeleteImage(idx)}
               className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center shadow"

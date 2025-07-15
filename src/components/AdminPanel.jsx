@@ -97,6 +97,10 @@ const AdminPanel = ({ funcList = defaultFuncList }) => {
                 console.log("Đăng xuất");
                 signOut();
                 break;
+            case 7:
+                console.log("Đăng xuất");
+                signOut();
+                break;
             default:
                 console.log("Chức năng không hợp lệ");
         }
