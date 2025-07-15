@@ -10,6 +10,7 @@ import AdminLayout from './layouts/AdminLayout';
 import Contract from './pages/Admin/Contract';
 import Electrical from './pages/Admin/Electrical';
 import Room from './pages/Admin/Room';
+import BillManager from './pages/Admin/BillManager';
 import ZnsManager from './pages/Admin/ZnsManager';
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
         <Route path="admin-Contract" element={<Contract />} /> 
         <Route path="admin-Electrical" element={<Electrical />} /> 
         <Route path="admin-Room" element={<Room />} /> 
+        <Route path="admin-BillManager" element={<BillManager />} /> 
         <Route path="admin-ZnsManager" element={<ZnsManager />} /> 
       </Route>
     </Routes>

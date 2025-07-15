@@ -43,17 +43,22 @@ const defaultFuncList = [
         )
     },
     {
-        label: "phòng trò", icon: (
+        label: "phòng", icon: (
             <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M2.535 11A3.981 3.981 0 0 0 2 13v4a1 1 0 0 0 1 1h2v1a1 1 0 1 0 2 0v-1h10v1a1 1 0 1 0 2 0v-1h2a1 1 0 0 0 1-1v-4c0-.729-.195-1.412-.535-2H2.535ZM20 9V8a4 4 0 0 0-4-4h-3v5h7Zm-9-5H8a4 4 0 0 0-4 4v1h7V4Z" />
             </svg>
         )
     },
     {
-        label: "Thông báo zalo", icon: (
+        label: "Hóa đơn", icon: (
             <svg className="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M17.133 12.632v-1.8a5.406 5.406 0 0 0-4.154-5.262.955.955 0 0 0 .021-.106V3.1a1 1 0 0 0-2 0v2.364a.955.955 0 0 0 .021.106 5.406 5.406 0 0 0-4.154 5.262v1.8C6.867 15.018 5 15.614 5 16.807 5 17.4 5 18 5.538 18h12.924C19 18 19 17.4 19 16.807c0-1.193-1.867-1.789-1.867-4.175ZM8.823 19a3.453 3.453 0 0 0 6.354 0H8.823Z" />
             </svg>
+        )
+    },
+    {
+        label: "ZNS", icon: (
+            <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17 8h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2M12 12v.01M12 16h.01M8 12v.01M8 16h.01M16 12v.01M16 16h.01M12 8v.01"/></svg>
         )
     },
     {
@@ -91,13 +96,16 @@ const AdminPanel = ({ funcList = defaultFuncList }) => {
                 navigate('/admin/admin-Room');
                 break;
             case 5:
-                navigate('/admin/admin-ZnsManager');
+                navigate('/admin/admin-BillManager');
                 break;
             case 6:
+                navigate('/admin/admin-ZnsManager');
+                break;
+            case 7:
                 console.log("Đăng xuất");
                 signOut();
                 break;
-            case 7:
+            case 8:
                 console.log("Đăng xuất");
                 signOut();
                 break;
