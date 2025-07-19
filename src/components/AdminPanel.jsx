@@ -58,7 +58,7 @@ const defaultFuncList = [
     },
     {
         label: "ZNS", icon: (
-            <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17 8h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2M12 12v.01M12 16h.01M8 12v.01M8 16h.01M16 12v.01M16 16h.01M12 8v.01"/></svg>
+            <svg className="w-6 h-6 text-black" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17 8h2a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2M12 12v.01M12 16h.01M8 12v.01M8 16h.01M16 12v.01M16 16h.01M12 8v.01"/></svg>
         )
     },
     {
@@ -115,23 +115,28 @@ const AdminPanel = ({ funcList = defaultFuncList }) => {
     }
 
     return (
-        <div className='flex h-screen'>
-            <div className="w-3/10 bg-gray-200 p-4 flex-row cursor-pointer">
+        <div className='flex min-h-screen bg-gray-50'>
+            {/* Sidebar */}
+            <aside className="w-[250px] bg-white shadow-xl rounded-r-3xl p-6 flex flex-col gap-2 h-screen sticky top-0 border-r border-blue-100">
+                <div className="mb-8 text-2xl font-extrabold text-blue-700 tracking-wide text-center select-none">Admin Panel</div>
                 {funcList.map((func, idx) => (
                     <div
                         key={idx}
                         onClick={() => handleClickForFunc(idx)}
                         className={
-                            (selectedIdx === idx ? 'bg-blue-400 text-white ' : '') +
-                            'p-2 rounded mb-2 transition-colors duration-200 flex items-center justify-center md:justify-start'
+                            'flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer font-semibold text-base transition-all duration-200 ' +
+                            (selectedIdx === idx
+                                ? 'bg-blue-50 text-blue-700 shadow border border-blue-200'
+                                : 'text-gray-700 hover:bg-blue-100 hover:text-blue-900')
                         }
                     >
-                        {/* Hiển thị icon trên mobile, chữ trên desktop */}
-                        <span className="block md:hidden text-2xl">{func.icon}</span>
-                        <span className="hidden md:block">{func.label}</span>
+                        <span className="text-xl">{func.icon}</span>
+                        <span>{func.label}</span>
                     </div>
                 ))}
-            </div>
+            </aside>
+            {/* Main content placeholder */}
+            <main className="flex-1"></main>
         </div>
     )
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { createClient } from '@supabase/supabase-js'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -17,6 +17,10 @@ export default function ChiNhanhManager() {
   })
   const [uploading, setUploading] = useState(false);
   const [editId, setEditId] = useState(null);
+  const fileInputRef = useRef(null);
+  const [showLibrary, setShowLibrary] = useState(false);
+  const [libraryImages, setLibraryImages] = useState([]);
+  const [loadingLibrary, setLoadingLibrary] = useState(false);
 
   useEffect(() => {
     fetchBranches()
@@ -119,6 +123,42 @@ export default function ChiNhanhManager() {
     setUploading(false);
   };
 
+  // Lấy tất cả ảnh từ bucket 'image/branch'
+  const fetchAllImages = async () => {
+    setLoadingLibrary(true);
+    const { data, error } = await supabase.storage.from('image').list('branch', { limit: 1000 });
+    if (error) {
+      alert('Lỗi lấy ảnh từ thư viện: ' + error.message);
+      setLoadingLibrary(false);
+      return;
+    }
+    // Lấy public URL cho từng ảnh
+    const images = data
+      .filter(item => item.name.match(/\.(jpg|jpeg|png|gif|webp)$/i))
+      .map(item => {
+        const { data: urlData } = supabase.storage.from('image').getPublicUrl(`branch/${item.name}`);
+        return { name: item.name, url: urlData.publicUrl };
+      });
+    setLibraryImages(images);
+    setLoadingLibrary(false);
+  };
+
+  const handleOpenLibrary = () => {
+    setShowLibrary(true);
+    fetchAllImages();
+  };
+
+  const handleSelectImage = (url) => {
+    setForm({ ...form, hinh_anh: url });
+    setShowLibrary(false);
+  };
+
+  const handleImageClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
   return (
     <div className='p-8 max-w-4xl mx-auto'>
       <h1 className='text-2xl font-bold mb-4'>Quản lý chi nhánh</h1>
@@ -137,14 +177,40 @@ export default function ChiNhanhManager() {
           <input
             type='file'
             accept='image/*'
-            className='p-2 border rounded w-full'
+            className='p-2 border rounded w-full hidden'
             onChange={handleImageUpload}
             disabled={uploading}
+            ref={fileInputRef}
           />
+          <div className='flex gap-2 items-center'>
+            {form.hinh_anh ? (
+              <img
+                src={form.hinh_anh}
+                alt='Xem trước'
+                className='w-16 h-16 object-cover rounded mt-2 cursor-pointer border-2 border-blue-400 hover:opacity-80'
+                title='Click để chọn lại ảnh'
+                onClick={handleImageClick}
+              />
+            ) : (
+              <button
+                type='button'
+                className='bg-gray-200 px-3 py-2 rounded mt-2 text-sm hover:bg-gray-300'
+                onClick={handleImageClick}
+                disabled={uploading}
+              >
+                Chọn ảnh
+              </button>
+            )}
+            <button
+              type='button'
+              className='bg-green-200 px-3 py-2 rounded mt-2 text-sm hover:bg-green-300 border border-green-400'
+              onClick={handleOpenLibrary}
+              disabled={uploading}
+            >
+              Chọn từ thư viện
+            </button>
+          </div>
           {uploading && <div className='text-blue-500 text-sm'>Đang tải ảnh...</div>}
-          {form.hinh_anh && (
-            <img src={form.hinh_anh} alt='Xem trước' className='w-16 h-16 object-cover rounded mt-2' />
-          )}
         </div>
         <input
           type='number'
@@ -161,6 +227,35 @@ export default function ChiNhanhManager() {
           onChange={(e) => setForm({ ...form, gia_nuoc: e.target.value })}
         />
       </div>
+
+      {/* Modal chọn ảnh từ thư viện */}
+      {showLibrary && (
+        <div className='fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50'>
+          <div className='bg-white p-6 rounded shadow-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto'>
+            <div className='flex justify-between items-center mb-4'>
+              <h2 className='text-lg font-bold'>Chọn ảnh từ thư viện</h2>
+              <button onClick={() => setShowLibrary(false)} className='text-red-500 font-bold text-xl'>&times;</button>
+            </div>
+            {loadingLibrary ? (
+              <div>Đang tải ảnh...</div>
+            ) : (
+              <div className='grid grid-cols-4 gap-4'>
+                {libraryImages.length === 0 && <div>Không có ảnh nào.</div>}
+                {libraryImages.map(img => (
+                  <img
+                    key={img.name}
+                    src={img.url}
+                    alt={img.name}
+                    className='w-24 h-24 object-cover rounded cursor-pointer border-2 border-transparent hover:border-blue-500 transition'
+                    onClick={() => handleSelectImage(img.url)}
+                    title={img.name}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       <button
         className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600'

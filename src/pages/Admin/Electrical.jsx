@@ -22,14 +22,17 @@ export default function Electrical() {
   const [exportMonth, setExportMonth] = useState('')
   const [exportYear, setExportYear] = useState('')
   const [batchResult, setBatchResult] = useState([])
+  const [branchFilter, setBranchFilter] = useState('');
+  const [branches, setBranches] = useState([]);
 
   useEffect(() => {
     fetchRooms()
     fetchEntries()
+    fetchBranches();
   }, [])
 
   const fetchRooms = async () => {
-    const { data, error } = await supabase.from('phong').select('ma_phong, ten_phong')
+    const { data, error } = await supabase.from('phong').select('ma_phong, ten_phong, ma_chi_nhanh')
     if (!error && data) setRooms(data)
   }
 
@@ -42,10 +45,18 @@ export default function Electrical() {
     }
   }
 
+  const fetchBranches = async () => {
+    const { data, error } = await supabase.from('chi_nhanh').select('ma_chi_nhanh, ten_chi_nhanh');
+    if (!error && data) setBranches(data);
+  };
+
   // Lọc entries theo phòng đang chọn
   const filteredEntries = selectedRoom
     ? entries.filter(e => e.ma_phong === selectedRoom.ma_phong)
     : []
+
+  // Lọc phòng theo chi nhánh
+  const filteredRooms = branchFilter ? rooms.filter(r => r.ma_chi_nhanh === branchFilter) : rooms;
 
   const handleSelectRoom = (room) => {
     setSelectedRoom(room)
@@ -180,6 +191,20 @@ export default function Electrical() {
   return (
     <div className='p-8 max-w-6xl mx-auto'>
       <h1 className='text-2xl font-bold mb-4'>Quản lý chỉ số điện nước</h1>
+      {/* Combobox lọc chi nhánh */}
+      <div className='mb-6 flex gap-4 items-center'>
+        <label className='font-semibold'>Lọc theo chi nhánh:</label>
+        <select
+          className='p-2 border rounded min-w-[200px]'
+          value={branchFilter}
+          onChange={e => setBranchFilter(e.target.value)}
+        >
+          <option value=''>Tất cả chi nhánh</option>
+          {branches.map(b => (
+            <option key={b.ma_chi_nhanh} value={b.ma_chi_nhanh}>{b.ten_chi_nhanh}</option>
+          ))}
+        </select>
+      </div>
       {/* Xuất hóa đơn hàng loạt */}
       <div className='mb-8 flex flex-wrap gap-4 items-end bg-blue-50 p-4 rounded-xl shadow'>
         <div>
@@ -234,7 +259,7 @@ export default function Electrical() {
         <>
           <h2 className='text-lg font-semibold mb-2'>Chọn phòng để quản lý</h2>
           <div className='grid grid-cols-4 gap-4'>
-          {rooms.map(room => (
+          {filteredRooms.slice().sort((a, b) => a.ten_phong.localeCompare(b.ten_phong)).map(room => (
               <div
                 key={room.ma_phong}
                 className='p-4 border rounded cursor-pointer hover:bg-blue-100 transition'

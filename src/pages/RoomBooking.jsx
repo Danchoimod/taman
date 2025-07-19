@@ -5,6 +5,7 @@ import Header from '../components/Header'
 import Footer from '../components/Footer'
 import Title from '../components/Title'
 import AppButton from '../components/AppButton'
+import zaloIcon from '../assets/img/zalo-icon.png'
 
 function RoomBooking() {
   const { branchId } = useParams()
@@ -57,7 +58,7 @@ function RoomBooking() {
           <p className="text-center text-gray-500 mt-8">Không có phòng nào trong chi nhánh này.</p>
         ) : (
           <ul className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto mt-8">
-            {rooms.map(room => (
+            {rooms.filter(room => room.dang_trong).map(room => (
               <li key={room.ma_phong}>
                 <div className="bg-white rounded-3xl shadow-xl border border-blue-100 hover:shadow-2xl transition p-4 flex flex-col items-center h-full">
                   <img
@@ -68,14 +69,18 @@ function RoomBooking() {
                   <div className="w-full text-center mb-3">
                     <p className="font-bold text-lg mb-1 text-blue-900">{room.ten_phong}</p>
                     <span className="text-base font-semibold text-blue-600">Giá: {room.gia_phong.toLocaleString()}đ</span>
-                    <span className="block text-sm mt-1 font-medium {room.dang_trong ? 'text-green-600' : 'text-gray-400'}">
+                    <span className={`block text-sm mt-1 font-medium ${room.dang_trong ? 'text-green-600' : 'text-gray-400'}`}>
                       {room.dang_trong ? 'Trống' : 'Đã thuê'}
                     </span>
                   </div>
-                  <AppButton
-                    text="Thuê"
-                    className="w-full mt-auto px-6 py-2 bg-gradient-to-r from-blue-400 to-blue-600 text-white rounded-full font-semibold shadow hover:from-blue-500 hover:to-blue-700 transition-all duration-300"
-                  />
+                  <button
+                    type="button"
+                    className="w-full mt-auto flex items-center justify-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-full font-semibold shadow text-base border border-blue-200 hover:bg-blue-200 hover:text-blue-900 transition-all duration-200 outline-none focus:ring-2 focus:ring-blue-100"
+                    onClick={() => window.open('https://zalo.me/0913778270', '_blank')}
+                  >
+                    <img src={zaloIcon} alt="Zalo" className="w-5 h-5 mr-1" />
+                    Liên hệ
+                  </button>
                 </div>
               </li>
             ))}

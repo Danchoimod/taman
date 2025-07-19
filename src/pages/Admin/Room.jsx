@@ -172,8 +172,8 @@ export default function Room() {
   };
 
   return (
-    <div className='p-8 max-w-5xl mx-auto'>
-      <h1 className='text-2xl font-bold mb-4'>Quản lý phòng</h1>
+    <div className='p-8 max-w-6xl mx-auto'>
+      <h1 className='text-3xl font-bold mb-8 text-center text-blue-700'>Quản lý phòng</h1>
       {/* Upload ảnh vào thư viện */}
       <div className='mb-8 p-4 bg-gray-50 rounded shadow flex flex-col md:flex-row items-center gap-4'>
         <form onSubmit={handleUploadToLibrary} className='flex items-center gap-2'>
@@ -207,44 +207,122 @@ export default function Room() {
           ))}
         </select>
       </div>
-
-      <div className='grid grid-cols-2 md:grid-cols-3 gap-4 mb-6'>
-        <input
-          type='text'
-          placeholder='Tên phòng'
-          className='p-2 border rounded'
-          value={form.ten_phong}
-          onChange={(e) => setForm({ ...form, ten_phong: e.target.value })}
-        />
-        <input
-          type='number'
-          placeholder='Giá phòng'
-          className='p-2 border rounded'
-          value={form.gia_phong}
-          onChange={(e) => setForm({ ...form, gia_phong: e.target.value })}
-        />
-        <select
-          className='p-2 border rounded'
-          value={form.ma_chi_nhanh}
-          onChange={e => setForm({ ...form, ma_chi_nhanh: e.target.value })}
-        >
-          <option value=''>Chọn chi nhánh</option>
-          {branches.map(branch => (
-            <option key={branch.ma_chi_nhanh} value={branch.ma_chi_nhanh}>
-              {branch.ten_chi_nhanh}
-            </option>
-          ))}
-        </select>
-        <button
-          type='button'
-          className='p-2 border rounded bg-gray-100 hover:bg-gray-200 col-span-2 md:col-span-1'
-          onClick={() => setShowImageLibrary(true)}
-        >
-          {form.hinh_anh ? 'Đã chọn ảnh' : 'Chọn ảnh từ thư viện'}
-        </button>
-        {form.hinh_anh && (
-          <img src={form.hinh_anh} alt='Ảnh phòng đã chọn' className='w-32 h-20 object-cover mt-2 col-span-2' />
-        )}
+      <div className='grid md:grid-cols-2 gap-8'>
+        {/* FORM CARD */}
+        <div className='bg-white rounded-2xl shadow-lg p-6 border border-blue-100 mb-6 md:mb-0'>
+          <h2 className='text-xl font-semibold mb-4 text-blue-600'>Thêm / Cập nhật phòng</h2>
+          <div className='grid grid-cols-1 gap-4 mb-4'>
+            <input
+              type='text'
+              placeholder='Tên phòng'
+              className='p-3 border rounded-lg focus:ring-2 focus:ring-blue-300'
+              value={form.ten_phong}
+              onChange={(e) => setForm({ ...form, ten_phong: e.target.value })}
+            />
+            <input
+              type='number'
+              placeholder='Giá phòng'
+              className='p-3 border rounded-lg focus:ring-2 focus:ring-blue-300'
+              value={form.gia_phong}
+              onChange={(e) => setForm({ ...form, gia_phong: e.target.value })}
+            />
+            <select
+              className='p-3 border rounded-lg focus:ring-2 focus:ring-blue-300'
+              value={form.ma_chi_nhanh}
+              onChange={e => setForm({ ...form, ma_chi_nhanh: e.target.value })}
+            >
+              <option value=''>Chọn chi nhánh</option>
+              {branches.map(branch => (
+                <option key={branch.ma_chi_nhanh} value={branch.ma_chi_nhanh}>
+                  {branch.ten_chi_nhanh}
+                </option>
+              ))}
+            </select>
+            <button
+              type='button'
+              className='p-3 border rounded-lg bg-gray-100 hover:bg-gray-200 font-semibold'
+              onClick={() => setShowImageLibrary(true)}
+            >
+              {form.hinh_anh ? 'Đã chọn ảnh' : 'Chọn ảnh từ thư viện'}
+            </button>
+            {form.hinh_anh && (
+              <img src={form.hinh_anh} alt='Ảnh phòng đã chọn' className='w-32 h-20 object-cover mt-2 rounded-lg border' />
+            )}
+          </div>
+          <div className='flex gap-2 justify-end'>
+            <button
+              className='bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 font-semibold shadow'
+              onClick={handleAddOrUpdate}
+            >
+              {editId ? 'Cập nhật' : 'Thêm phòng'}
+            </button>
+            <button
+              className='bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500 font-semibold shadow'
+              onClick={() => {
+                setForm({ ten_phong: '', gia_phong: '', ma_chi_nhanh: '', hinh_anh: '' });
+                setEditId(null);
+              }}
+            >
+              Huỷ
+            </button>
+          </div>
+        </div>
+        {/* ROOM LIST CARD */}
+        <div className='bg-white rounded-2xl shadow-lg p-6 border border-blue-100'>
+          <h2 className='text-xl font-semibold mb-4 text-blue-600'>Danh sách phòng</h2>
+          <div className='flex flex-col gap-4 max-h-[600px] overflow-y-auto'>
+            {phongs.length === 0 && (
+              <div className='text-gray-500 text-center py-8'>Chưa có phòng nào.</div>
+            )}
+            {[...phongs]
+              .sort((a, b) => {
+                // Chưa thuê (dang_trong === true) lên trên
+                if (a.dang_trong === b.dang_trong) return 0;
+                return a.dang_trong ? -1 : 1;
+              })
+              .map((phong) => (
+              <div
+                key={phong.ma_phong}
+                className='p-4 bg-blue-50 border border-blue-200 rounded-xl flex flex-col md:flex-row md:justify-between md:items-center gap-2 shadow-sm hover:shadow-md transition'
+              >
+                <div className='flex items-center gap-4'>
+                  {phong.hinh_anh && (
+                    <img src={phong.hinh_anh} alt='Hình phòng' className='w-32 h-20 object-cover mb-2 rounded-lg border' />
+                  )}
+                  <div>
+                    <h2 className='font-bold text-blue-900'>{phong.ten_phong}</h2>
+                    <p>💰 Giá: <span className='font-semibold text-orange-600'>{Number(phong.gia_phong).toLocaleString('vi-VN')}đ</span></p>
+                    <p>Chi nhánh: <span className='font-semibold text-green-700'>{phong.chi_nhanh ? phong.chi_nhanh.ten_chi_nhanh : 'Không có'}</span></p>
+                    <p>
+                      📌 Trạng thái:{' '}
+                      <span
+                        className={
+                          phong.dang_trong ? 'text-green-600 font-semibold' : 'text-red-500 font-semibold'
+                        }
+                      >
+                        {phong.dang_trong ? 'Đang trống' : 'Đã thuê'}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+                <div className='flex gap-2 justify-end'>
+                  <button
+                    onClick={() => handleEdit(phong)}
+                    className='text-blue-600 hover:text-blue-800 font-semibold px-3 py-1 rounded-lg border border-blue-200 bg-white shadow-sm'
+                  >
+                    Sửa
+                  </button>
+                  <button
+                    onClick={() => handleDelete(phong.ma_phong)}
+                    className='text-red-600 hover:text-red-800 font-semibold px-3 py-1 rounded-lg border border-red-200 bg-white shadow-sm'
+                  >
+                    Xoá
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
       {/* Popup chọn ảnh từ thư viện */}
       {showImageLibrary && (
@@ -271,55 +349,6 @@ export default function Room() {
           </div>
         </div>
       )}
-
-      <button
-        className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600'
-        onClick={handleAddOrUpdate}
-      >
-        {editId ? 'Cập nhật' : 'Thêm phòng'}
-      </button>
-
-      <div className='mt-8 grid gap-4'>
-        {phongs.map((phong) => (
-          <div
-            key={phong.ma_phong}
-            className='p-4 bg-white shadow rounded flex justify-between items-center'
-          >
-            <div>
-              {phong.hinh_anh && (
-                <img src={phong.hinh_anh} alt='Hình phòng' className='w-32 h-20 object-cover mb-2' />
-              )}
-              <h2 className='font-bold'>{phong.ten_phong}</h2>
-              <p>💰 Giá: {phong.gia_phong}đ</p>
-              <p> Chi nhánh: {phong.chi_nhanh ? phong.chi_nhanh.ten_chi_nhanh : 'Không có'}</p>
-              <p>
-                📌 Trạng thái:{' '}
-                <span
-                  className={
-                    phong.dang_trong ? 'text-green-600' : 'text-red-500'
-                  }
-                >
-                  {phong.dang_trong ? 'Đang trống' : 'Đã thuê'}
-                </span>
-              </p>
-            </div>
-            <div>
-              <button
-                onClick={() => handleEdit(phong)}
-                className='text-blue-500 hover:text-blue-700 mr-2'
-              >
-                Sửa
-              </button>
-              <button
-                onClick={() => handleDelete(phong.ma_phong)}
-                className='text-red-500 hover:text-red-700'
-              >
-                Xoá
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
     </div>
   )
 }

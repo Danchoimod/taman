@@ -43,7 +43,13 @@ function BranchSelector() {
           <ul className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
             {branches.map(branch => (
               <li key={branch.ma_chi_nhanh}>
-                <div className="bg-white rounded-3xl shadow-xl border border-blue-100 hover:shadow-2xl transition p-4 flex flex-col items-center h-full">
+                <div
+                  className="bg-white rounded-3xl shadow-xl border border-blue-100 hover:shadow-2xl hover:border-blue-400 hover:scale-[1.03] transition-all duration-200 p-4 flex flex-col items-center h-full cursor-pointer"
+                  onClick={() => handleSelect(branch.ma_chi_nhanh)}
+                  tabIndex={0}
+                  role="button"
+                  onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') handleSelect(branch.ma_chi_nhanh); }}
+                >
                   <img
                     src={getImageUrl(branch.hinh_anh)}
                     alt={branch.ten_chi_nhanh}
@@ -53,11 +59,6 @@ function BranchSelector() {
                     <p className='font-bold text-lg mb-1'>{branch.ten_chi_nhanh}</p>
                     <span className="text-sm font-normal">Điện: <span className="font-bold text-blue-600">{branch.gia_dien}</span>/kWh &nbsp;|&nbsp; Nước: <span className="font-bold text-blue-600">{branch.gia_nuoc}</span>/m³</span>
                   </div>
-                  <AppButton
-                    onClick={() => handleSelect(branch.ma_chi_nhanh)}
-                    text="Khám khảo"
-                    className="w-full mt-auto px-6 py-2 bg-gradient-to-r from-blue-400 to-blue-600 text-white rounded-full font-semibold shadow hover:from-blue-500 hover:to-blue-700 transition-all duration-300"
-                  />
                 </div>
               </li>
             ))}

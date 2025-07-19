@@ -88,32 +88,32 @@ function Home() {
         <Notfication notfi="Tiện nghi"></Notfication>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto mt-6 mb-10">
           <Amenities
-            icon="📶"
+            icon="wifi"
             title="Wifi tốc độ cao"
             message="Kết nối ổn định, hỗ trợ học tập và làm việc online hiệu quả."
           />
           <Amenities
-            icon="🎥"
+            icon="camera"
             title="Camera an ninh"
             message="Hệ thống giám sát 24/7 đảm bảo an toàn tuyệt đối."
           />
           <Amenities
-            icon="🛒"
+            icon="store"
             title="Tạp hóa & giặt ủi"
             message="Tiết kiệm thời gian, thuận tiện cho sinh hoạt hàng ngày."
           />
           <Amenities
-            icon="🐶"
+            icon="pet"
             title="Nuôi thú cưng"
             message="Thoải mái sống cùng thú cưng mà không bị ràng buộc."
           />
           <Amenities
-            icon="❄️"
+            icon="ac"
             title="Có điều hòa mát mẻ"
             message="Giữ cho căn phòng luôn dễ chịu, kể cả ngày hè oi bức."
           />
           <Amenities
-            icon="⏰"
+            icon="clock"
             title="Tự do giờ giấc"
             message="Không giới hạn giờ giấc ra vào, phù hợp với sinh viên và người đi làm."
           />
@@ -140,10 +140,31 @@ function Home() {
 }
 
 // Amenities có icon
+const amenityIcons = {
+  wifi: (
+    <svg className="w-10 h-10 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M2.05 7.05a16 16 0 0 1 19.9 0" /><path d="M5.5 10.5a11 11 0 0 1 13 0" /><path d="M8.5 13.5a6 6 0 0 1 7 0" /><circle cx="12" cy="17" r="1.5" /></svg>
+  ),
+  camera: (
+    <svg className="w-10 h-10 text-green-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="15" rx="3" /><circle cx="12" cy="14" r="3.5" /><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
+  ),
+  store: (
+    <svg className="w-10 h-10 text-yellow-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M3 9l1-5h16l1 5" /><path d="M5 22V12H19V22" /><rect x="7" y="16" width="2" height="6" /><rect x="15" y="16" width="2" height="6" /></svg>
+  ),
+  pet: (
+    <svg className="w-10 h-10 text-pink-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="4.5" cy="9.5" r="2.5" /><circle cx="19.5" cy="9.5" r="2.5" /><ellipse cx="12" cy="17" rx="7" ry="5" /><circle cx="12" cy="7" r="3" /></svg>
+  ),
+  ac: (
+    <svg className="w-10 h-10 text-cyan-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="6" rx="2" /><path d="M7 19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2" /><path d="M12 11v6" /></svg>
+  ),
+  clock: (
+    <svg className="w-10 h-10 text-purple-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
+  ),
+};
+
 function Amenities({ icon, title, message }) {
   return (
     <div className="bg-white text-black rounded-2xl p-6 flex flex-col items-center shadow-md hover:shadow-xl transition-transform duration-300 hover:scale-105 border border-gray-100">
-      <div className="text-4xl mb-2">{icon}</div>
+      <div className="mb-2">{amenityIcons[icon]}</div>
       <h1 className='text-xl font-semibold mb-1'>{title}</h1>
       <p className="text-gray-600 text-center">{message}</p>
     </div>

@@ -15,20 +15,23 @@ const Dashboard = () => {
   const [contractCount, setContractCount] = useState(0);
   const [branchCount, setBranchCount] = useState(0);
   const [emptyRoomCount, setEmptyRoomCount] = useState(0);
+  const [folder, setFolder] = useState('content');
+  const [customFolder, setCustomFolder] = useState('');
 
-  // Hàm tải danh sách ảnh từ bucket 'image' trong folder 'content'
-  const fetchImages = async () => {
+  // Hàm tải danh sách ảnh từ bucket 'image' trong folder đang chọn
+  const fetchImages = async (targetFolder = folder) => {
     setLoading(true)
-    const { data, error } = await supabase.storage.from('image').list('content', { limit: 100 })
+    const { data, error } = await supabase.storage.from('image').list(targetFolder, { limit: 100 })
     if (!error && data) {
       const files = data.filter(f => f.name)
       const urls = files.map(f => ({
         name: f.name,
-        url: supabase.storage.from('image').getPublicUrl(`content/${f.name}`).data.publicUrl
+        url: supabase.storage.from('image').getPublicUrl(`${targetFolder}/${f.name}`).data.publicUrl
       }))
       setImages(urls)
     } else {
-      console.error('Lỗi load ảnh:', error)
+      setImages([])
+      if (error) console.error('Lỗi load ảnh:', error)
     }
     setLoading(false)
   }
@@ -53,11 +56,11 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    fetchImages()
+    fetchImages(folder)
     fetchStats()
-  }, [])
+  }, [folder])
 
-  // Upload ảnh vào image/content/
+  // Upload ảnh vào image/[folder]
   const handleAddImage = async (e) => {
     const file = e.target.files[0]
     if (!file) return
@@ -70,7 +73,7 @@ const Dashboard = () => {
 
     const { error: uploadError } = await supabase.storage
       .from('image')
-      .upload(`content/${fileName}`, file)
+      .upload(`${folder}/${fileName}`, file)
 
     if (uploadError) {
       alert('Lỗi upload ảnh: ' + uploadError.message)
@@ -79,24 +82,24 @@ const Dashboard = () => {
       return
     }
 
-    await fetchImages()
+    await fetchImages(folder)
     setLoading(false)
   }
 
-  // Xoá ảnh trong image/content/
+  // Xoá ảnh trong image/[folder]
   const handleDeleteImage = async (idx) => {
     const img = images[idx]
     setLoading(true)
 
     const { error } = await supabase.storage
       .from('image')
-      .remove([`content/${img.name}`])
+      .remove([`${folder}/${img.name}`])
 
     if (error) {
       alert('Lỗi xoá ảnh: ' + error.message)
       console.error('Delete error:', error)
     } else {
-      await fetchImages()
+      await fetchImages(folder)
     }
 
     setLoading(false)
@@ -132,9 +135,37 @@ const Dashboard = () => {
           </div>
         ))}
       </div>
-      <div className="flex items-center mb-4">
+      <div className="flex items-center mb-4 gap-4">
         <svg className="w-7 h-7 text-pink-500 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M3 7v10a4 4 0 004 4h10a4 4 0 004-4V7" /><path d="M16 3v4M8 3v4M3 11h18" /></svg>
-        <p className="font-bold text-xl text-gray-800">Quản lý hình ảnh (bucket: image / content)</p>
+        <p className="font-bold text-xl text-gray-800">Quản lý hình ảnh (bucket: image / thư mục: <span className='text-blue-600'>{folder}</span>)</p>
+        <select
+          className="ml-4 border rounded px-2 py-1"
+          value={['content','branch','room-images'].includes(folder) ? folder : 'custom'}
+          onChange={e => {
+            if (e.target.value === 'custom') {
+              setFolder(customFolder || '')
+            } else {
+              setFolder(e.target.value)
+            }
+          }}
+        >
+          <option value="content">content</option>
+          <option value="branch">branch</option>
+          <option value="room-images">room-images</option>
+          <option value="custom">Khác...</option>
+        </select>
+        {(['content','branch','room-images'].includes(folder) ? false : true) && (
+          <input
+            className="ml-2 border rounded px-2 py-1"
+            placeholder="Nhập tên thư mục"
+            value={customFolder}
+            onChange={e => {
+              setCustomFolder(e.target.value)
+              setFolder(e.target.value)
+            }}
+            style={{width: 140}}
+          />
+        )}
       </div>
       <form onSubmit={e => e.preventDefault()} className="flex items-center gap-3 mb-6">
         <input

@@ -29,6 +29,11 @@ const ZnsManager = () => {
   const [editingId, setEditingId] = useState(null)
   const [filterMonth, setFilterMonth] = useState('')
   const [filterYear, setFilterYear] = useState('')
+  const [branchInvoiceFilter, setBranchInvoiceFilter] = useState('');
+  const [page, setPage] = useState(1);
+  const pageSize = 20;
+  const [totalInvoices, setTotalInvoices] = useState(0);
+  const [showBatchProgress, setShowBatchProgress] = useState(false);
 
   useEffect(() => {
     fetchInvoices()
@@ -36,15 +41,35 @@ const ZnsManager = () => {
     fetchBranches()
   }, [])
 
+  // Lấy danh sách hóa đơn theo filter, chi nhánh, phân trang
   const fetchInvoices = async () => {
-    setLoading(true)
-    const { data, error } = await supabase
-      .from('hoa_don')
-      .select('*')
-      .order('thang_nam', { ascending: false })
-    if (!error && data) setInvoices(data)
-    setLoading(false)
-  }
+    setLoading(true);
+    let filteredRooms = rooms;
+    if (branchInvoiceFilter) {
+      filteredRooms = rooms.filter(r => r.ma_chi_nhanh === branchInvoiceFilter);
+    }
+    const roomIds = filteredRooms.map(r => r.ma_phong);
+    let query = supabase.from('hoa_don').select('*', { count: 'exact' }).order('thang_nam', { ascending: false });
+    if (roomIds.length > 0 && branchInvoiceFilter) {
+      query = query.in('ma_phong', roomIds);
+    }
+    // Lọc theo tháng/năm
+    if (filterMonth) {
+      query = query.like('thang_nam', `${filterMonth}/%`);
+    }
+    if (filterYear) {
+      query = query.like('thang_nam', `%/${filterYear}`);
+    }
+    // Phân trang
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize - 1;
+    const { data, error, count } = await query.range(from, to);
+    if (!error && data) {
+      setInvoices(data);
+      setTotalInvoices(count || 0);
+    }
+    setLoading(false);
+  };
 
   const fetchRooms = async () => {
     const { data, error } = await supabase.from('phong').select('ma_phong, ten_phong, gia_phong, ma_chi_nhanh')
@@ -159,6 +184,11 @@ const ZnsManager = () => {
     }
     if (!form.thang_nam) fetchLast2Bills()
   }, [form.ma_phong, rooms, branches, form.thang_nam])
+
+  // Khi đổi filter, chi nhánh, trang sẽ fetch lại hóa đơn
+  useEffect(() => {
+    fetchInvoices();
+  }, [branchInvoiceFilter, filterMonth, filterYear, page, rooms]);
 
   // Tính tiền điện, nước, tổng tiền
   const calcTienDien = () => {
@@ -294,6 +324,14 @@ const ZnsManager = () => {
     return true
   })
 
+  // Lọc hóa đơn theo chi nhánh
+  const filteredInvoicesByBranch = branchInvoiceFilter
+    ? filteredInvoices.filter(hd => {
+        const room = rooms.find(r => r.ma_phong === hd.ma_phong);
+        return room && room.ma_chi_nhanh === branchInvoiceFilter;
+      })
+    : filteredInvoices;
+
   // Xuất Excel
   const handleExportExcel = () => {
     const data = filteredInvoices.map(hd => ({
@@ -321,88 +359,74 @@ const ZnsManager = () => {
       alert('Vui lòng nhập tháng và năm để tự tạo hóa đơn!')
       return
     }
+    setShowBatchProgress(true);
     const month = Number(filterMonth)
     const year = Number(filterYear)
-    let created = 0, skipped = 0
+    // Lấy toàn bộ chỉ số điện nước, hợp đồng, hóa đơn đã có
+    const { data: allSoDienNuoc } = await supabase.from('so_dien_nuoc').select('*');
+    const { data: allHopDong } = await supabase.from('hop_dong').select('ma_phong, ho_ten, ma_hop_dong, trang_thai');
+    const { data: allHoaDon } = await supabase.from('hoa_don').select('ma_phong, thang_nam');
+    let created = 0, skipped = 0;
+    const billsToInsert = [];
     for (const room of rooms) {
       // Lấy chỉ số mới
-      const { data: moiArr } = await supabase
-        .from('so_dien_nuoc')
-        .select('*')
-        .eq('ma_phong', room.ma_phong)
-        .eq('thang', month)
-        .eq('nam', year)
-      const moi = moiArr && moiArr.length > 0 ? moiArr[0] : null
+      const moi = allSoDienNuoc.find(e => e.ma_phong === room.ma_phong && e.thang === month && e.nam === year);
       // Lấy chỉ số cũ
-      let prevMonth = month - 1
-      let prevYear = year
+      let prevMonth = month - 1;
+      let prevYear = year;
       if (prevMonth === 0) {
-        prevMonth = 12
-        prevYear = year - 1
+        prevMonth = 12;
+        prevYear = year - 1;
       }
-      const { data: cuArr } = await supabase
-        .from('so_dien_nuoc')
-        .select('*')
-        .eq('ma_phong', room.ma_phong)
-        .eq('thang', prevMonth)
-        .eq('nam', prevYear)
-      const cu = cuArr && cuArr.length > 0 ? cuArr[0] : null
+      const cu = allSoDienNuoc.find(e => e.ma_phong === room.ma_phong && e.thang === prevMonth && e.nam === prevYear);
       // Lấy giá điện/nước, tiền phòng
-      const branch = branches.find(b => b.ma_chi_nhanh === room.ma_chi_nhanh)
+      const branch = branches.find(b => b.ma_chi_nhanh === room.ma_chi_nhanh);
       // Lấy tên khách hàng và ma_hop_dong
-      const { data: hdData } = await supabase
-        .from('hop_dong')
-        .select('ho_ten, ma_hop_dong')
-        .eq('ma_phong', room.ma_phong)
-        .eq('trang_thai', 'active')
-        .maybeSingle()
+      const hdData = allHopDong.find(hd => hd.ma_phong === room.ma_phong && hd.trang_thai === 'active');
       // Kiểm tra trùng hóa đơn
-      const { data: existed } = await supabase
-        .from('hoa_don')
-        .select('ma_hoa_don')
-        .eq('ma_phong', room.ma_phong)
-        .eq('thang_nam', `${filterMonth}/${filterYear}`)
-        .maybeSingle()
+      const existed = allHoaDon.find(hd => hd.ma_phong === room.ma_phong && hd.thang_nam === `${filterMonth}/${filterYear}`);
       if (existed) {
-        skipped++
-        continue
+        skipped++;
+        continue;
       }
       if (!moi || !cu || !branch || !hdData || !hdData.ho_ten) {
-        skipped++
-        continue
+        skipped++;
+        continue;
       }
       // Tính tiền
-      const dien_cu = cu.so_dien
-      const dien_moi = moi.so_dien
-      const nuoc_cu = cu.so_nuoc
-      const nuoc_moi = moi.so_nuoc
-      const gia_dien = branch.gia_dien
-      const gia_nuoc = branch.gia_nuoc
-      const tien_phong = room.gia_phong
-      const tien_dien = (dien_moi - dien_cu) * gia_dien
-      const tien_nuoc = (nuoc_moi - nuoc_cu) * gia_nuoc
-      const tong_tien = tien_dien + tien_nuoc + Number(tien_phong || 0)
-      // Tạo bill
-      await supabase.from('hoa_don').insert([
-        {
-          ma_phong: room.ma_phong,
-          thang_nam: `${filterMonth}/${filterYear}`,
-          customer_name: hdData.ho_ten,
-          dien_cu,
-          dien_moi,
-          tien_dien,
-          nuoc_cu,
-          nuoc_moi,
-          tien_nuoc,
-          tien_phong,
-          tong_tien,
-          ma_hop_dong: hdData.ma_hop_dong,
-        }
-      ])
-      created++
+      const dien_cu = cu.so_dien;
+      const dien_moi = moi.so_dien;
+      const nuoc_cu = cu.so_nuoc;
+      const nuoc_moi = moi.so_nuoc;
+      const gia_dien = branch.gia_dien;
+      const gia_nuoc = branch.gia_nuoc;
+      const tien_phong = room.gia_phong;
+      const tien_dien = (dien_moi - dien_cu) * gia_dien;
+      const tien_nuoc = (nuoc_moi - nuoc_cu) * gia_nuoc;
+      const tong_tien = tien_dien + tien_nuoc + Number(tien_phong || 0);
+      billsToInsert.push({
+        ma_phong: room.ma_phong,
+        thang_nam: `${filterMonth}/${filterYear}`,
+        customer_name: hdData.ho_ten,
+        dien_cu,
+        dien_moi,
+        tien_dien,
+        nuoc_cu,
+        nuoc_moi,
+        tien_nuoc,
+        tien_phong,
+        tong_tien,
+        ma_hop_dong: hdData.ma_hop_dong,
+      });
+      created++;
     }
-    fetchInvoices()
-    alert(`Đã tạo ${created} hóa đơn. Bỏ qua ${skipped} phòng thiếu dữ liệu.`)
+    // Insert 1 lần
+    if (billsToInsert.length > 0) {
+      await supabase.from('hoa_don').insert(billsToInsert);
+    }
+    fetchInvoices();
+    setShowBatchProgress(false);
+    alert(`Đã tạo ${created} hóa đơn. Bỏ qua ${skipped} phòng thiếu dữ liệu.`);
   }
 
   return (
@@ -454,6 +478,17 @@ const ZnsManager = () => {
         )}
       </div>
       {loading && <div className="text-blue-500 mb-4">Đang tải...</div>}
+      {showBatchProgress && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white p-8 rounded-xl shadow-lg flex flex-col items-center gap-4 min-w-[300px]">
+            <svg className="animate-spin w-12 h-12 text-blue-500" fill="none" stroke="currentColor" strokeWidth="4" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" />
+              <path className="opacity-75" d="M4 12a8 8 0 018-8v8z" />
+            </svg>
+            <div className="text-lg font-semibold text-blue-700">Đang tạo hóa đơn hàng loạt...</div>
+          </div>
+        </div>
+      )}
       <div className="overflow-x-auto">
         {/* Lọc và xuất excel */}
         <div className="flex flex-wrap gap-4 items-end mb-4">
@@ -464,6 +499,19 @@ const ZnsManager = () => {
           <div>
             <label className="block font-semibold mb-1">Lọc theo năm</label>
             <input type="text" value={filterYear} onChange={e => setFilterYear(e.target.value)} placeholder="VD: 2024" className="p-2 border rounded w-28" maxLength={4} />
+          </div>
+          <div>
+            <label className="block font-semibold mb-1">Lọc theo chi nhánh</label>
+            <select
+              className="p-2 border rounded min-w-[180px]"
+              value={branchInvoiceFilter}
+              onChange={e => { setBranchInvoiceFilter(e.target.value); setPage(1); }}
+            >
+              <option value=''>Tất cả chi nhánh</option>
+              {branches.map(b => (
+                <option key={b.ma_chi_nhanh} value={b.ma_chi_nhanh}>{b.ten_chi_nhanh}</option>
+              ))}
+            </select>
           </div>
           <button
             className="px-4 py-2 rounded bg-gradient-to-r from-green-400 to-green-600 text-white font-semibold shadow hover:from-green-500 hover:to-green-700 transition-all duration-300"
@@ -496,7 +544,7 @@ const ZnsManager = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredInvoices.map((hd) => (
+            {invoices.map((hd) => (
               <tr key={hd.ma_hoa_don}>
                 <td className="px-2 py-1 border">{hd.customer_name}</td>
                 <td className="px-2 py-1 border">{hd.thang_nam}</td>
@@ -515,11 +563,29 @@ const ZnsManager = () => {
                 </td>
               </tr>
             ))}
-            {filteredInvoices.length === 0 && !loading && (
+            {invoices.length === 0 && !loading && (
               <tr><td colSpan={12} className="text-center py-4">Không có hóa đơn nào</td></tr>
             )}
           </tbody>
         </table>
+        {/* Pagination */}
+        <div className="flex justify-center items-center gap-2 mt-4">
+          <button
+            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            disabled={page === 1}
+          >
+            Trang trước
+          </button>
+          <span>Trang {page} / {Math.ceil(totalInvoices / pageSize) || 1}</span>
+          <button
+            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50"
+            onClick={() => setPage(p => p + 1)}
+            disabled={page >= Math.ceil(totalInvoices / pageSize)}
+          >
+            Trang sau
+          </button>
+        </div>
       </div>
     </div>
   )

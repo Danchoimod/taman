@@ -15,7 +15,7 @@ export default function LienHe() {
             <div className="flex items-center gap-3 text-lg">
               <span className="text-blue-500 text-2xl">📞</span>
               <span className="font-semibold">Điện thoại:</span>
-              <a href="tel:0901234567" className="text-blue-700 hover:underline">0901 234 567</a>
+              <a href="tel:0913778270" className="text-blue-700 hover:underline">0913778270</a>
             </div>
             <div className="flex items-center gap-3 text-lg">
               <span className="text-green-600 text-2xl">✉️</span>
@@ -30,7 +30,7 @@ export default function LienHe() {
             <div className="flex items-center gap-3 text-lg">
               <span className="text-blue-400 text-2xl">💬</span>
               <span className="font-semibold">Zalo:</span>
-              <a href="https://zalo.me/0395473223" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline">0901 234 567</a>
+              <a href="https://zalo.me/0913778270" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline">0913778270</a>
             </div>
           </div>
           <div className="w-full bg-blue-50 rounded-xl p-4 flex flex-col items-center mb-2">
